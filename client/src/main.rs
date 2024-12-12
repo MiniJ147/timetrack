@@ -1,15 +1,29 @@
-// use std::time::{Duration, SystemTime,UNIX_EPOCH};
-// use std::thread::sleep;
+use std::io;
 mod session;
 
 fn main() {
-    println!("Hello, world!");
+    println!("Hello, world! To leave type: End");
     let args: Vec<String> = std::env::args().collect();
     for arg in args {
         println!("{arg}");
     }
+    let mut session = session::new_offline("offline session 1".to_string());
 
-    let foo = session::new_offline("example session".to_string());
-    foo.start();
-    foo.end();
+    loop {
+        let mut input = String::new();
+        print!(">> ");
+        let _ = io::stdin().read_line(&mut input); 
+        match input.trim() {
+            "Start" => session.start(),
+            "Pause" => session.pause(),
+            "Time" => println!("{} seconds",session.time_get_total().as_secs()),
+            "End" => { 
+                session.end(); 
+                break;
+            },
+            _ => println!("invalid input"),
+        }
+
+    }
+
 }
