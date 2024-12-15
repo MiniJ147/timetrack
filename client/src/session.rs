@@ -1,13 +1,17 @@
 use std::time::{Duration, SystemTime};
 
+struct Note {
+    timestamp: Duration,
+    message: String,
+}
 
 pub trait Session {
     fn start(&mut self);
     fn end(&mut self);
     fn pause(&mut self);
-    fn time_get_total(&mut self) -> Duration;
+    fn duration(&mut self) -> Duration;
+    fn add_note(&mut self, message: String);
 }
-
 
 /*
 * time_current is our calculation time so it is important to keep it updated as it is the time
@@ -20,7 +24,8 @@ struct SessionOffline {
     time_ended: SystemTime, // offical end of session 
     time_duration: Duration, // total duration not including pauses
     active: bool, // should we be tracking time
-    ended: bool
+    ended: bool,
+    notes: Vec<Note>
 }
 
 impl Session for SessionOffline{
@@ -57,12 +62,25 @@ impl Session for SessionOffline{
         self.active = false;
     }
 
-    fn time_get_total(&mut self) -> Duration{
+    fn duration(&mut self) -> Duration{
         if self.active {
             self.time_update();
         }
 
         self.time_duration
+    }
+
+    fn add_note(&mut self, message: String) {
+        let new_note = Note{
+            timestamp: self.duration(),
+            message,
+        };
+        
+        self.notes.push(new_note);
+
+        // for n in self.notes.iter() {
+            // println!("{0},{1}",n.message,format_time(&n.time_created));
+        // }
     }
 }
 
@@ -86,6 +104,22 @@ pub fn new_offline(name: String) -> Box<dyn Session>{
         time_duration: Duration::new(0,0),
         active: false,
         ended: false,
+        notes: Vec::new() 
     })
 }
 
+
+
+// utility 
+
+pub fn format_time(duration: &Duration) -> String {
+    let time_secs = duration.as_secs();
+    let hours = time_secs/3600;
+    let minutes = (time_secs/60) - (hours*60);
+    let seconds = time_secs - ((hours*3600) + (minutes*60));
+   
+    let minute_str = if minutes < 10 {format!("0{minutes}")} else {format!("{minutes}")};
+    let second_str = if seconds < 10 {format!("0{seconds}")} else {format!("{seconds}")};
+    
+    format!("{hours}:{minute_str}:{second_str}")
+}
