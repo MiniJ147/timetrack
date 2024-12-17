@@ -1,14 +1,15 @@
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 
 struct Note {
-    timestamp: Duration,
-    session_name: String,
+    timestamp: Duration, // task duration that it was created at
     message: String,
 }
 
 pub struct Task {
     name: String,
     time_elapsed: Duration,
+    time_current: SystemTime,
+    active: bool,
     completed: bool,
     notes: Vec<Note>,
 }
@@ -27,10 +28,9 @@ impl Task {
         println!("Task: {0}\nDuration: {1}\nCompleted: {2}",self.name,self.time_elapsed.as_secs(),self.completed)
     }
 
-    pub fn add_note(&mut self, session_name: String, message: String) {
+    pub fn add_note(&mut self, message: String) {
         self.notes.push(Note{
             timestamp: self.time_elapsed, //auto clones?
-            session_name,
             message,
         });
     }
@@ -40,6 +40,8 @@ pub fn new(name: String) -> Task {
     Task{
         name,
         time_elapsed: Duration::new(0, 0),
+        time_current: SystemTime::now(),
+        active: false,
         completed: false,
         notes: Vec::new(),
     }

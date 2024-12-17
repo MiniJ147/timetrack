@@ -10,7 +10,8 @@ fn main() {
     }
     let mut session = session::new_offline("offline session 1".to_string());
     let mut task = task::new("example".to_string());
-    task.add_note("session x".to_string(),"hello task from this".to_string());
+
+    task.add_note("hello task from this".to_string());
     task.view();
 
     loop {

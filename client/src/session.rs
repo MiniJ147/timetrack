@@ -1,7 +1,8 @@
+use core::panic;
 use std::time::{Duration, SystemTime};
 
 struct Note {
-    timestamp: Duration,
+    timestamp: Duration, // time in session note was taken
     message: String,
 }
 
@@ -17,13 +18,13 @@ pub trait Session {
 * time_current is our calculation time so it is important to keep it updated as it is the time
 * since last action
 */
-struct SessionOffline {
+pub struct SessionOffline {
     name: String, 
     time_created: SystemTime, // start of session 
     time_current: SystemTime, // last known time since start or resume of session
     time_ended: SystemTime, // offical end of session 
     time_duration: Duration, // total duration not including pauses
-    active: bool, // should we be tracking time
+    active: bool,// should we be tracking time
     ended: bool,
     notes: Vec<Note>
 }
@@ -86,10 +87,14 @@ impl Session for SessionOffline{
 
 impl SessionOffline {
     fn time_update(&mut self){
-        let now = SystemTime::now();
-
-        self.time_duration += now.duration_since(self.time_current).unwrap();
-        self.time_current = now;
+        // old impl 
+        // let now = SystemTime::now();
+        //
+        // self.time_duration += now.duration_since(self.time_current).unwrap();
+        // self.time_current = now;
+        //
+        self.time_duration += self.time_current.elapsed().expect("error when updating offline time");
+        self.time_current = SystemTime::now();
     }
 }
 
@@ -108,7 +113,29 @@ pub fn new_offline(name: String) -> Box<dyn Session>{
     })
 }
 
+pub struct SessionOnline {}
+impl Session for SessionOnline {
+    fn start(&mut self){
+        panic!("function not implemented!");
+    }
+    fn pause(&mut self){
+        panic!("function not implemented!");
+    }
+    fn end(&mut self){
+        panic!("function not implemented!");
+    }
+    fn duration(&mut self) -> Duration {
+        panic!("function not implemented!");
+    } 
+    fn add_note(&mut self, _message: String) {
+        panic!("function not implemented!");
+    }
+}
 
+
+pub fn new_online() -> Box<dyn Session> {
+    panic!("warning not implemented");
+}
 
 // utility 
 

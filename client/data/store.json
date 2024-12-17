@@ -1,0 +1,35 @@
+{
+    "sessions": [
+        {
+            "name": "session1",
+            "timeCreated": 12344,
+            "timeCurrent": 12344,
+            "timeEnded": 123344,
+            "timeDuration": 12234,
+            "active": true,
+            "ended": false,
+            "notes": [
+                {
+                    "timestamp": 123344,
+                    "message": "note message specfic to session"
+                }
+            ]
+        }
+    ],
+    "tasks": [
+        {
+            "name": "task1",
+            "timeElapsed": 12334,
+            "timeCurrent": 12334, 
+            "completed": false,
+            "active": false,
+            "notes": [
+                {
+                    "timestamp": 12344,
+                    "message": "note message specfic to task"
+                }
+            ]
+        }
+    ]
+    
+}
