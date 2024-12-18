@@ -6,7 +6,7 @@
             "timeCurrent": 12344,
             "timeEnded": 123344,
             "timeDuration": 12234,
-            "active": true,
+            "active": false,
             "ended": false,
             "notes": [
                 {
@@ -32,4 +32,4 @@
         }
     ]
     
-}
+}  
