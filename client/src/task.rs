@@ -1,14 +1,14 @@
 use std::time::{Duration, SystemTime};
-use serde::{Serialize, Deserialize};
+// use serde::{Serialize, Deserialize};
 
 
-#[derive(Serialize, Deserialize)]
+// #[derive(Serialize, Deserialize)]
 struct Note {
     timestamp: Duration, // task duration that it was created at
     message: String,
 }
 
-#[derive(Serialize, Deserialize)]
+// #[derive(Serialize, Deserialize)]
 pub struct Task {
     name: String,
     time_elapsed: Duration,

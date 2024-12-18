@@ -7,6 +7,9 @@ fn main(){
         if arg=="init"{
             initializer::init();
         }
+        if arg=="reset"{
+            initializer::reset();
+        }
         println!("{arg}");
     }
 
@@ -14,6 +17,8 @@ fn main(){
         println!("{s}");
         std::process::exit(1);
     }
+
+
 }
 
 // fn main() {

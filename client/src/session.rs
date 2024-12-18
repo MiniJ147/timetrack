@@ -1,8 +1,8 @@
 use core::panic;
 use std::time::{Duration, SystemTime};
-use serde::{Serialize, Deserialize};
+// use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize)]
+// #[derive(Serialize, Deserialize)]
 struct Note {
     timestamp: Duration, // time in session note was taken
     message: String,
@@ -21,7 +21,7 @@ pub trait Session {
 * since last action
 */
 
-#[derive(Serialize,Deserialize)]
+// #[derive(Serialize,Deserialize)]
 pub struct SessionOffline {
     name: String, 
     time_created: SystemTime, // start of session 
@@ -117,7 +117,7 @@ pub fn new_offline(name: String) -> Box<dyn Session>{
     })
 }
 
-#[derive(Serialize,Deserialize)]
+// #[derive(Serialize,Deserialize)]
 pub struct SessionOnline {}
 
 impl Session for SessionOnline {
