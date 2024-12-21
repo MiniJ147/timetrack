@@ -1,4 +1,5 @@
-use client::initializer;
+use client::{db, initializer, runner};
+use rusqlite::Connection;
 
 // use std::io;
 fn main(){
@@ -18,37 +19,22 @@ fn main(){
         std::process::exit(1);
     }
 
+    let path = std::env::var("HOME").expect("HOME enviroment variable not set")+"/.timetrack.db";
+    let conn = Connection::open(&path).expect("failed db connection");    
 
+    // db::session_update_active(&conn, false);
+    db::session_update_time_elapsed(&conn);
+
+    // db::session_end(&conn);
+
+    let session = match db::session_get_active(&conn) {
+        Some(s) => s,
+        None => {
+            println!("no session found!");
+            db::session_create(&conn, "some new session".to_string());
+            return;
+        }
+    };
+
+    println!("{:?}",session);
 }
-
-// fn main() {
-//     println!("Hello, world! To leave type: end");
-//     let args: Vec<String> = std::env::args().collect();
-//     for arg in args {
-//         println!("{arg}");
-//     }
-//     let mut session = session::new_offline("offline session 1".to_string());
-//     let mut task = task::new("example".to_string());
-//
-//     task.add_note("hello task from this".to_string());
-//     task.view();
-//
-//     loop {
-//         let mut input = String::new();
-//         print!(">> ");
-//         let _ = io::stdin().read_line(&mut input); 
-//         match input.trim() {
-//             "start" => session.start(),
-//             "pause" => session.pause(),
-//             "time" => println!("{}",session::format_time(&session.duration())),
-//             "add" => session.add_note("example message".to_string()),
-//             "end" => { 
-//                 session.end(); 
-//                 break;
-//             },
-//             _ => println!("invalid input"),
-//         }
-//
-//     }
-//
-// }
