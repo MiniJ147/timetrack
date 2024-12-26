@@ -1,16 +1,19 @@
-use client::{db, initializer, lexer, runner};
+use client::{db, evaluator, initializer, lexer, runner};
 use rusqlite::Connection;
 
 // use std::io;
 fn main(){
     let tokens = lexer::parse_args();
-    for token in tokens {
-        match token {
-            lexer::Token::Keyword(s) => println!("Keyword: {s}"),
-            lexer::Token::Arg(s) => println!("Arg: {s}"),
-            lexer::Token::Value(s) => println!("Value: {s}")
+    for token in tokens.iter() {
+        let s = &token.str;
+        match token.kind {
+            lexer::Type::Keyword => println!("Keyword: {s}"),
+            lexer::Type::Arg => println!("Arg: {s}"),
+            lexer::Type::Value => println!("Value: {s}")
         }
     }
+
+    evaluator::evaluate(&tokens);
     // let args: Vec<String> = std::env::args().collect();
     // for arg in args {
     //     if arg=="init"{
