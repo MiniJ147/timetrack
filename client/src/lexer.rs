@@ -1,4 +1,3 @@
-
 #[derive(PartialEq, Debug)]
 pub enum Type {
     Keyword,
@@ -51,7 +50,7 @@ fn generate_token(arg: &str) -> Token {
         "init" => Token{kind:Type::Keyword, str: KEYWORD_INIT.to_string(), action:Action::Init},
         "drop" => Token{kind:Type::Keyword, str: KEYWORD_DROP.to_string(), action:Action::Drop},
         _ => {
-            if arg.contains("-") || arg.contains("--") {
+            if arg.starts_with("-"){ 
                 Token{kind:Type::Arg, str: arg.to_string(),action:Action::None}
             }else{
                 Token{kind:Type::Value, str: arg.to_string(),action:Action::None}

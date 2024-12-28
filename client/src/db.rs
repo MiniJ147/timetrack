@@ -118,7 +118,7 @@ pub fn session_update_time_elapsed(conn: &Connection) {
 
 /// creates session does not check if a session already exists 
 /// panics if query failed execution.
-pub fn session_create(conn: &Connection, name: String) {
+pub fn session_create(conn: &Connection, name: &String) {
     conn.execute(QUERY_SESSION_INSERT, params![name]).expect("failed session insertion query");
 }
 
@@ -128,16 +128,15 @@ pub fn session_update_time_current(conn: &Connection) {
     conn.execute(QUERY_SESSION_UPDATE_TIME,params![]).unwrap();
 }
 
-// updates current time.
-// ends session by setting time_ended = time_now.
-// panics if query fails or session_update_time_elapsed() fails.
+/// ends session by setting time_ended = time_now.
+/// panics if query fails 
 pub fn session_end(conn: &Connection) {
-    session_update_time_elapsed(conn);
-
     conn.execute(QUERY_SESSION_END, params![]).unwrap();
 }   
 
 /// updates session active status.
+/// value = true means resuming session 
+/// value = false means pausing session
 /// if true - calls session_update_time_current() to keep state.
 /// if false - calls session_update_time_elapsed() to keep state.
 /// fails if either functions fail or query fails.

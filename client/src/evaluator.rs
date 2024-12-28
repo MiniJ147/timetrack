@@ -5,7 +5,7 @@ use crate::lexer::{Token,Type,Action};
 pub struct State {
     pub action: Action,
     pub args: String,
-    pub value: String,
+    pub value: Option<String>,
 }
 
 const SESSION_ARGS: [&str;14] = ["s","start","e","end","p","pause","v","view","m","message","t","time", "h", "help"];
@@ -15,7 +15,7 @@ const LIST_ARGS: [&str;2] = ["h","help"]; // to be implemented
 pub fn evaluate(tokens: &Vec<Token>) -> State {
     //value, keyword
     let mut should_verify = true;
-    let mut state = State{action: Action::None, args: "".to_string(), value: "".to_string()}; 
+    let mut state = State{action: Action::None, args: "".to_string(), value: None};
 
     let expected = vec![Type::Value, Type::Keyword, Type::Arg, Type::Value];
     assert!(tokens.len() <= expected.len());
@@ -46,7 +46,11 @@ pub fn evaluate(tokens: &Vec<Token>) -> State {
 
                 state.args = arg; 
             },
-            Type::Value => state.value = token.str.clone(), 
+            Type::Value => {
+                if i > 0 { // ensure we aren't copying the exe value
+                    state.value = Some(token.str.clone())
+                }
+            }
         }
     }
 
