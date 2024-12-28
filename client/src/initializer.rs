@@ -28,3 +28,7 @@ pub fn reset() {
     let abs_path = get_abs_path();
     std::fs::remove_file(abs_path).expect("failed database drop");
 }
+
+pub fn create_connection() -> rusqlite::Connection {
+    Connection::open(get_abs_path()).expect("failed to load data file")
+}

@@ -1,18 +1,20 @@
+use crate::initializer;
 use crate::lexer::{Token,Type,Action};
 
 #[derive(Debug)]
 pub struct State {
-    action: Action,
-    args: String,
-    value: String,
+    pub action: Action,
+    pub args: String,
+    pub value: String,
 }
 
-const SESSION_ARGS: [&str;12] = ["s","start","e","end","p","pause","v","view","m","message","t","time"];
-const TASK_ARGS: [&str;0] = []; // to be implemented 
-const LIST_ARGS: [&str;0] = []; // to be implemented
+const SESSION_ARGS: [&str;14] = ["s","start","e","end","p","pause","v","view","m","message","t","time", "h", "help"];
+const TASK_ARGS: [&str;2] = ["h","help"]; // to be implemented 
+const LIST_ARGS: [&str;2] = ["h","help"]; // to be implemented
 
-pub fn evaluate(tokens: &Vec<Token>) {
+pub fn evaluate(tokens: &Vec<Token>) -> State {
     //value, keyword
+    let mut should_verify = true;
     let mut state = State{action: Action::None, args: "".to_string(), value: "".to_string()}; 
 
     let expected = vec![Type::Value, Type::Keyword, Type::Arg, Type::Value];
@@ -20,23 +22,42 @@ pub fn evaluate(tokens: &Vec<Token>) {
 
     for (i, token) in tokens.iter().enumerate(){
         if !token.kind.eq(&expected[i]) {
-            println!("invalid");
-            continue;
+            eprintln!("unexpected token, recived: {0:?}, expected {1:?}", token.kind, expected[i]);
+            std::process::exit(1);
         }
         
         match expected[i] {
-            Type::Keyword => state.action = token.action,
+            Type::Keyword => {
+                state.action = token.action;
+
+                // breaking early skips verfication which it should
+                if state.action.eq(&Action::Help) || state.action.eq(&Action::Init) || state.action.eq(&Action::Drop) {
+                    should_verify = false;
+                    break; 
+                }
+            },
             Type::Arg => {
                 let arg = token.str.replace("-","");
 
-                assert!(validate_arg(state.action, &arg[..]));
+                if !validate_arg(state.action, &arg[..]){
+                    eprintln!("{} is an invalid argument please use -h for more info",arg);
+                    std::process::exit(1);
+                }
+
                 state.args = arg; 
             },
             Type::Value => state.value = token.str.clone(), 
         }
     }
 
-    println!("{:?}",state);
+    if should_verify { 
+        if let Err(s) = initializer::verify() {
+            eprintln!("{s}");
+            std::process::exit(1);
+        }
+    }
+
+    state 
 }
 
 fn validate_arg(action: Action, arg_trimed: &str) -> bool {
@@ -44,6 +65,6 @@ fn validate_arg(action: Action, arg_trimed: &str) -> bool {
         Action::Session => SESSION_ARGS.contains(&arg_trimed),
         Action::Task => TASK_ARGS.contains(&arg_trimed), 
         Action::List => LIST_ARGS.contains(&arg_trimed),
-        Action::None => false,
+        _ => false, // covers help, init, None
     }
 }

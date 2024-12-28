@@ -1,16 +1,19 @@
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum Type {
     Keyword,
     Arg,
     Value,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(PartialEq, Clone, Copy, Debug)]
 pub enum Action{
     Session,
     Task,
     List,
+    Init,
+    Help,
+    Drop,
     None 
 }
 
@@ -23,6 +26,9 @@ pub struct Token {
 pub const KEYWORD_SESSION: &str = "session";
 pub const KEYWORD_TASK: &str = "task";
 pub const KEYWORD_LIST: &str = "list";
+pub const KEYWORD_INIT: &str = "init";
+pub const KEYWORD_HELP: &str = "help";
+pub const KEYWORD_DROP: &str = "drop";
 
 pub fn parse_args() ->Vec<Token>{
     let mut result: Vec<Token> = Vec::new();
@@ -41,6 +47,9 @@ fn generate_token(arg: &str) -> Token {
         "s" => Token{kind:Type::Keyword, str: KEYWORD_SESSION.to_string(), action:Action::Session},
         "task" => Token{kind:Type::Keyword, str:KEYWORD_TASK.to_string(), action:Action::Task},
         "t" => Token{kind:Type::Keyword, str: KEYWORD_TASK.to_string(), action:Action::Task},
+        "help" => Token{kind:Type::Keyword, str: KEYWORD_HELP.to_string(), action:Action::Help},
+        "init" => Token{kind:Type::Keyword, str: KEYWORD_INIT.to_string(), action:Action::Init},
+        "drop" => Token{kind:Type::Keyword, str: KEYWORD_DROP.to_string(), action:Action::Drop},
         _ => {
             if arg.contains("-") || arg.contains("--") {
                 Token{kind:Type::Arg, str: arg.to_string(),action:Action::None}
