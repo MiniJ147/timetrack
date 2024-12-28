@@ -1,5 +1,5 @@
 
-use crate::{db, evaluator, initializer, lexer};
+use crate::{evaluator, initializer, lexer, note, session};
 
 struct Runner {
     conn: rusqlite::Connection,
@@ -8,22 +8,23 @@ struct Runner {
 
 impl Runner { 
     pub fn session_start(&self) {
-        let res = db::session_get_active(&self.conn);
+        let res = session::get_active(&self.conn);
         if let Some(s) = res {
             println!("resuming session {0}",s.name);
-            db::session_update_active(&self.conn, true);
+            session::update_active(&self.conn, true);
             return 
         }
 
+        
         println!("creating session");
         match &self.state.value {
-            Some(name) => db::session_create(&self.conn, &name),
-            None => db::session_create(&self.conn, &String::from("new_session")),
+            Some(name) => session::create(&self.conn, &name),
+            None => session::create(&self.conn, &String::from("new_session")),
         }
     }
 
     pub fn session_time(&self) {
-        db::session_update_time_elapsed(&self.conn);
+        session::update_time_elapsed(&self.conn);
         let s = self.session_get_active();
 
         println!("session -> {0}: {1}",s.name, self.session_format_time(s.time_elapsed));
@@ -31,19 +32,34 @@ impl Runner {
     
     pub fn session_pause(&self) {
         println!("pausing session");
-        db::session_update_active(&self.conn, false);
+        session::update_active(&self.conn, false);
     }
 
     pub fn session_end(&self) {
-        db::session_update_time_elapsed(&self.conn);
+        session::update_time_elapsed(&self.conn);
         let s = self.session_get_active();
 
-        db::session_end(&self.conn);
+        session::end(&self.conn);
         println!("ended session {0} with elapsed time: {1}",s.name, self.session_format_time(s.time_elapsed));
     }
 
-    fn session_get_active(&self) -> db::Session {
-        if let Some(session) = db::session_get_active(&self.conn) {
+    pub fn session_notes(&self) {
+        let s = self.session_get_active();
+
+        if let Some(msg) = &self.state.value {
+            note::create(&self.conn, msg, s.id, session::ID);
+            println!("successfully created message");
+            return;
+        }
+
+        let notes = note::fetch_via_id(&self.conn, s.id);
+        for note in notes.iter() {
+            println!("{:?}",note);
+        }
+    }
+
+    fn session_get_active(&self) -> session::Session {
+        if let Some(session) = session::get_active(&self.conn) {
             return session
         }
         
@@ -88,6 +104,7 @@ fn run_session(runner: &Runner) {
         "t" => runner.session_time(), 
         "p" => runner.session_pause(),
         "e" => runner.session_end(),
+        "m" => runner.session_notes(),
         _ => panic!("invalid arg"),
     }
 }
