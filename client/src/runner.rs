@@ -24,7 +24,7 @@ impl Runner {
     }
 
     pub fn session_time(&self) {
-        session::update_time_elapsed(&self.conn);
+        // session::update_time_elapsed(&self.conn);
         let s = self.session_get_active();
 
         println!("session -> {0}: {1}",s.name, self.session_format_time(s.time_elapsed));
@@ -36,7 +36,7 @@ impl Runner {
     }
 
     pub fn session_end(&self) {
-        session::update_time_elapsed(&self.conn);
+        // session::update_time_elapsed(&self.conn);
         let s = self.session_get_active();
 
         session::end(&self.conn);
@@ -47,7 +47,7 @@ impl Runner {
         let s = self.session_get_active();
 
         if let Some(msg) = &self.state.value {
-            note::create(&self.conn, msg, s.id, session::ID);
+            note::create(&self.conn,s.time_elapsed,msg, s.id, session::ID);
             println!("successfully created message");
             return;
         }
@@ -59,6 +59,7 @@ impl Runner {
     }
 
     fn session_get_active(&self) -> session::Session {
+        session::update_time_elapsed(&self.conn);
         if let Some(session) = session::get_active(&self.conn) {
             return session
         }
@@ -67,7 +68,7 @@ impl Runner {
         std::process::exit(2);
     }
 
-    fn session_format_time(&self, time_secs: i64) -> String {
+    fn session_format_time(&self, time_secs: u64) -> String {
         let time_secs = time_secs;
         let hours = time_secs/3600;
         let minutes = (time_secs/60) - (hours*60);

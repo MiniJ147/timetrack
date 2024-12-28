@@ -41,9 +41,9 @@ pub const ID: u8 = 0;
 pub struct Session {
     pub id: u32,
     pub name: String,
-    pub time_elapsed: i64, 
-    pub time_current: i64,
-    pub time_ended: i64,
+    pub time_elapsed: u64, 
+    pub time_current: u64,
+    pub time_ended: u64,
     pub active: i8
 }
 pub fn get_active(conn: &Connection) -> Option<Session> { 
