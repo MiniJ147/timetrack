@@ -1,4 +1,4 @@
-use crate::{evaluator, initializer, lexer, session};
+use crate::{evaluator, initializer, lexer, session, task};
 
 
 pub fn execute(){   
@@ -9,7 +9,7 @@ pub fn execute(){
         lexer::Action::Session => session::run(state, conn),
         lexer::Action::Help => println!("here is some help"),
         lexer::Action::Init => initializer::init(),
-        lexer::Action::Task => println!("expect"),
+        lexer::Action::Task => task::run(conn, state), 
         lexer::Action::List => println!("list"),
         lexer::Action::Drop => initializer::reset(),
         _ => panic!("invalid action"),

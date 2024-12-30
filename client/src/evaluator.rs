@@ -9,7 +9,7 @@ pub struct State {
 }
 
 const SESSION_ARGS: [&str;16] = ["s","start","e","end","p","pause","v","view","m","message","t","time", "h", "help", "d", "delete"];
-const TASK_ARGS: [&str;2] = ["h","help"]; // to be implemented 
+const TASK_ARGS: [&str;6] = ["h","help","n","new","a","active"]; // to be implemented 
 const LIST_ARGS: [&str;2] = ["h","help"]; // to be implemented
 
 pub fn evaluate(tokens: &Vec<Token>) -> State {
@@ -22,7 +22,7 @@ pub fn evaluate(tokens: &Vec<Token>) -> State {
 
     for (i, token) in tokens.iter().enumerate(){
         if !token.kind.eq(&expected[i]) {
-            eprintln!("unexpected token, recived: {0:?}, expected {1:?}", token.kind, expected[i]);
+            eprintln!("EVALUATOR: unexpected token, recived: {0:?}, expected {1:?}", token.kind, expected[i]);
             std::process::exit(1);
         }
         
@@ -40,7 +40,7 @@ pub fn evaluate(tokens: &Vec<Token>) -> State {
                 let arg = token.str.replace("-","");
 
                 if !validate_arg(state.action, &arg[..]){
-                    eprintln!("{} is an invalid argument please use -h for more info",arg);
+                    eprintln!("EVALUATOR: {} is an invalid argument please use -h for more info",arg);
                     std::process::exit(1);
                 }
 

@@ -5,7 +5,7 @@ use super::Runner;
 
 impl Runner { 
     pub fn start(&self) {
-        let res = db::get_active(&self.conn);
+        let res = db::get_alive(&self.conn);
         if let Some(s) = res {
             println!("resuming session {0}",s.name);
             db::update_active(&self.conn, true);
@@ -22,7 +22,7 @@ impl Runner {
 
     pub fn time(&self) {
         // db::update_time_elapsed(&self.conn);
-        let s = self.get_active();
+        let s = self.get_alive();
 
         println!("session -> {0}: {1}",s.name, self.format_time(s.time_elapsed));
     }
@@ -34,14 +34,14 @@ impl Runner {
 
     pub fn end(&self) {
         // db::update_time_elapsed(&self.conn);
-        let s = self.get_active();
+        let s = self.get_alive();
 
         db::end(&self.conn);
         println!("ended session {0} with elapsed time: {1}",s.name, self.format_time(s.time_elapsed));
     }
 
     pub fn notes(&self) {
-        let s = self.get_active();
+        let s = self.get_alive();
 
         if let Some(msg) = &self.state.value {
             note::create(&self.conn,s.time_elapsed,msg, s.id, db::ID);
@@ -65,9 +65,13 @@ impl Runner {
         } 
     }
 
-    fn get_active(&self) -> db::Session {
+    fn get_alive(&self) -> db::Session {
         db::update_time_elapsed(&self.conn);
-        if let Some(session) = db::get_active(&self.conn) {
+        if let Some(session) = db::get_alive(&self.conn) {
+            if session.active != 0 {
+                db::update_task_time_elapsed(&self.conn);
+            }
+
             return session
         }
         

@@ -34,7 +34,7 @@ pub fn run(state: evaluator::State, conn: rusqlite::Connection) {
         "m" => runner.notes(),
         "d" => runner.delete(),
         "h" => println!("{}",HELP_STR),
-        _ => panic!("invalid arg"),
+        _ => panic!("SESSION: invalid argument please run [session -h]"),
     }
 }
 
