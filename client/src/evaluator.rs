@@ -8,7 +8,7 @@ pub struct State {
     pub value: Option<String>,
 }
 
-const SESSION_ARGS: [&str;14] = ["s","start","e","end","p","pause","v","view","m","message","t","time", "h", "help"];
+const SESSION_ARGS: [&str;16] = ["s","start","e","end","p","pause","v","view","m","message","t","time", "h", "help", "d", "delete"];
 const TASK_ARGS: [&str;2] = ["h","help"]; // to be implemented 
 const LIST_ARGS: [&str;2] = ["h","help"]; // to be implemented
 

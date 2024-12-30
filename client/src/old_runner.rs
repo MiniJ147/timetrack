@@ -57,6 +57,16 @@ impl Runner {
             println!("{:?}",note);
         }
     }
+    
+    pub fn session_delete(&self) {
+        if let Some(id) = &self.state.value {
+            let u32_id = id.parse::<u32>().unwrap();
+            session::delete(&self.conn, u32_id);
+            println!("successfully deleted {u32_id}");
+        }else{
+            eprintln!("must provide id: timetrack session -d [id]");
+        } 
+    }
 
     fn session_get_active(&self) -> session::Session {
         session::update_time_elapsed(&self.conn);
@@ -106,6 +116,8 @@ fn run_session(runner: &Runner) {
         "p" => runner.session_pause(),
         "e" => runner.session_end(),
         "m" => runner.session_notes(),
+        "d" => runner.session_delete(),
+        "h" => println!("{}",session::HELP_STR),
         _ => panic!("invalid arg"),
     }
 }
