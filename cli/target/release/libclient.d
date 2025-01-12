@@ -1,0 +1,1 @@
+/home/jake/programming/timetrack/client/target/release/libclient.rlib: /home/jake/programming/timetrack/client/src/initializer.rs /home/jake/programming/timetrack/client/src/lib.rs /home/jake/programming/timetrack/client/src/runner.rs /home/jake/programming/timetrack/client/src/session.rs /home/jake/programming/timetrack/client/src/task.rs
