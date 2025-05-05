@@ -1,7 +1,6 @@
 package sessions
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -17,17 +16,24 @@ type handler struct {
 }
 
 func (h *handler) PostNew(c echo.Context) error {
-    err := h.service.Create(c.Request().Context(), "testtest2", 1)
-    if err != nil{
-        return c.JSON(http.StatusBadRequest,JSON{
-            "err":"session already active or failed crate idk this is just basic error msg",
-        })
-    }
-    fmt.Println(err)
+	err := h.service.Create(c.Request().Context(), "testtest2", 1)
 
-    return c.JSON(http.StatusCreated,JSON{
-        "msg": "new session made!",
-    })
+	if err != nil {
+		switch err {
+		case ErrActiveSession:
+			return c.JSON(http.StatusBadRequest, JSON{
+				"err": "session already active",
+			})
+		default:
+			return c.JSON(http.StatusInternalServerError, JSON{
+				"err": "unexpected: " + err.Error(),
+			})
+		}
+	}
+
+	return c.JSON(http.StatusCreated, JSON{
+		"msg": "new session made!",
+	})
 }
 
 func New(repo Repository) Handler {

@@ -14,8 +14,8 @@ var loaded bool = false
 // Fatalf if it fails to Load
 // keeps loaded boolean check to ensure incorrect calls aren't made
 func Load(filenames ...string) {
-	if godotenv.Load(filenames...) != nil {
-		log.Fatalf("Error loading %v files", filenames)
+	if err := godotenv.Load(filenames...); err != nil {
+        log.Fatalf("Error loading %v files | %v", filenames, err)
 	}
 
 	loaded = true
